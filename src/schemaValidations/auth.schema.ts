@@ -1,10 +1,18 @@
-import { Role } from '~/constants/type'
+import { Role, TokenType } from '~/constants/type'
 import z from 'zod'
+
+export type TokenPayload = {
+  userId: number
+  role: (typeof Role)[keyof typeof Role]
+  tokenType: (typeof TokenType)[keyof typeof TokenType]
+  iat: number
+  exp: number
+}
 
 export const LoginBody = z
   .object({
     email: z.string().email(),
-    password: z.string().min(6).max(100),
+    password: z.string().min(6).max(100)
   })
   .strict()
 
@@ -19,17 +27,17 @@ export const LoginRes = z.object({
       name: z.string(),
       email: z.string(),
       role: z.enum([Role.Owner, Role.Employee]),
-      avatar: z.string().nullable(),
-    }),
+      avatar: z.string().nullable()
+    })
   }),
-  message: z.string(),
+  message: z.string()
 })
 
 export type LoginResType = z.TypeOf<typeof LoginRes>
 
 export const RefreshTokenBody = z
   .object({
-    refreshToken: z.string(),
+    refreshToken: z.string()
   })
   .strict()
 
@@ -38,23 +46,23 @@ export type RefreshTokenBodyType = z.TypeOf<typeof RefreshTokenBody>
 export const RefreshTokenRes = z.object({
   data: z.object({
     accessToken: z.string(),
-    refreshToken: z.string(),
+    refreshToken: z.string()
   }),
-  message: z.string(),
+  message: z.string()
 })
 
 export type RefreshTokenResType = z.TypeOf<typeof RefreshTokenRes>
 
 export const LogoutBody = z
   .object({
-    refreshToken: z.string(),
+    refreshToken: z.string()
   })
   .strict()
 
 export type LogoutBodyType = z.TypeOf<typeof LogoutBody>
 
 export const LoginGoogleQuery = z.object({
-  code: z.string(),
+  code: z.string()
 })
 
 export type LoginGoogleQueryType = z.TypeOf<typeof LoginGoogleQuery>

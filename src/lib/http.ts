@@ -90,14 +90,14 @@ const request = async <Res>(
     method,
     headers: {
       ...baseHeaders,
-      ...options?.headers,
+      ...options?.headers
     },
-    body,
+    body
   })
   const payload = (await response.json()) as Res
   const data: HttpRes<Res> = {
     status: response.status,
-    payload,
+    payload
   }
 
   if (!response.ok) {
@@ -110,7 +110,7 @@ const request = async <Res>(
             clientLogoutRequest = fetch('/api/auth/logout', {
               method: 'POST',
               headers: baseHeaders,
-              body: null,
+              body: null
             })
 
             try {
@@ -167,7 +167,7 @@ const http = {
   patch: <Res>(url: string, body?: any, options?: HttpOptions) =>
     request<Res>('PATCH', url, { ...options, body }),
   delete: <Res>(url: string, options?: HttpOptions) =>
-    request<Res>('DELETE', url, options),
+    request<Res>('DELETE', url, options)
 }
 
 export type { HttpRes }

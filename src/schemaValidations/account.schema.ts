@@ -7,14 +7,14 @@ export const AccountSchema = z.object({
   name: z.string(),
   email: z.string(),
   role: z.enum([Role.Owner, Role.Employee]),
-  avatar: z.string().nullable(),
+  avatar: z.string().nullable()
 })
 
 export type AccountType = z.TypeOf<typeof AccountSchema>
 
 export const AccountListRes = z.object({
   data: z.array(AccountSchema),
-  message: z.string(),
+  message: z.string()
 })
 
 export type AccountListResType = z.TypeOf<typeof AccountListRes>
@@ -22,7 +22,7 @@ export type AccountListResType = z.TypeOf<typeof AccountListRes>
 export const AccountRes = z
   .object({
     data: AccountSchema,
-    message: z.string(),
+    message: z.string()
   })
   .strict()
 
@@ -34,7 +34,7 @@ export const CreateEmployeeAccountBody = z
     email: z.string().email(),
     avatar: z.string().url().optional(),
     password: z.string().min(6).max(100),
-    confirmPassword: z.string().min(6).max(100),
+    confirmPassword: z.string().min(6).max(100)
   })
   .strict()
   .superRefine(({ confirmPassword, password }, ctx) => {
@@ -42,7 +42,7 @@ export const CreateEmployeeAccountBody = z
       ctx.addIssue({
         code: 'custom',
         message: 'Mật khẩu không khớp',
-        path: ['confirmPassword'],
+        path: ['confirmPassword']
       })
     }
   })
@@ -59,7 +59,7 @@ export const UpdateEmployeeAccountBody = z
     changePassword: z.boolean().optional(),
     password: z.string().min(6).max(100).optional(),
     confirmPassword: z.string().min(6).max(100).optional(),
-    role: z.enum([Role.Owner, Role.Employee]).optional().default(Role.Employee),
+    role: z.enum([Role.Owner, Role.Employee]).optional().default(Role.Employee)
   })
   .strict()
   .superRefine(({ confirmPassword, password, changePassword }, ctx) => {
@@ -68,13 +68,13 @@ export const UpdateEmployeeAccountBody = z
         ctx.addIssue({
           code: 'custom',
           message: 'Hãy nhập mật khẩu mới và xác nhận mật khẩu mới',
-          path: ['changePassword'],
+          path: ['changePassword']
         })
       } else if (confirmPassword !== password) {
         ctx.addIssue({
           code: 'custom',
           message: 'Mật khẩu không khớp',
-          path: ['confirmPassword'],
+          path: ['confirmPassword']
         })
       }
     }
@@ -87,7 +87,7 @@ export type UpdateEmployeeAccountBodyType = z.TypeOf<
 export const UpdateMeBody = z
   .object({
     name: z.string().trim().min(2).max(256),
-    avatar: z.string().url().optional(),
+    avatar: z.string().url().optional()
   })
   .strict()
 
@@ -97,7 +97,7 @@ export const ChangePasswordBody = z
   .object({
     oldPassword: z.string().min(6).max(100),
     password: z.string().min(6).max(100),
-    confirmPassword: z.string().min(6).max(100),
+    confirmPassword: z.string().min(6).max(100)
   })
   .strict()
   .superRefine(({ confirmPassword, password }, ctx) => {
@@ -105,7 +105,7 @@ export const ChangePasswordBody = z
       ctx.addIssue({
         code: 'custom',
         message: 'Mật khẩu mới không khớp',
-        path: ['confirmPassword'],
+        path: ['confirmPassword']
       })
     }
   })
@@ -121,7 +121,7 @@ export const ChangePasswordV2Res = LoginRes
 export type ChangePasswordV2ResType = z.TypeOf<typeof ChangePasswordV2Res>
 
 export const AccountIdParam = z.object({
-  id: z.coerce.number(),
+  id: z.coerce.number()
 })
 
 export type AccountIdParamType = z.TypeOf<typeof AccountIdParam>
@@ -133,17 +133,17 @@ export const GetListGuestsRes = z.object({
       name: z.string(),
       tableNumber: z.number().nullable(),
       createdAt: z.date(),
-      updatedAt: z.date(),
+      updatedAt: z.date()
     })
   ),
-  message: z.string(),
+  message: z.string()
 })
 
 export type GetListGuestsResType = z.TypeOf<typeof GetListGuestsRes>
 
 export const GetGuestListQueryParams = z.object({
   fromDate: z.coerce.date().optional(),
-  toDate: z.coerce.date().optional(),
+  toDate: z.coerce.date().optional()
 })
 
 export type GetGuestListQueryParamsType = z.TypeOf<
@@ -153,7 +153,7 @@ export type GetGuestListQueryParamsType = z.TypeOf<
 export const CreateGuestBody = z
   .object({
     name: z.string().trim().min(2).max(256),
-    tableNumber: z.number(),
+    tableNumber: z.number()
   })
   .strict()
 
@@ -167,8 +167,8 @@ export const CreateGuestRes = z.object({
     role: z.enum([Role.Guest]),
     tableNumber: z.number().nullable(),
     createdAt: z.date(),
-    updatedAt: z.date(),
-  }),
+    updatedAt: z.date()
+  })
 })
 
 export type CreateGuestResType = z.TypeOf<typeof CreateGuestRes>
