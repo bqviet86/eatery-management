@@ -1,6 +1,10 @@
 import { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+
+import { envConfig } from '~/config'
 import './globals.css'
+
+console.log(envConfig)
 
 const inter = Inter({
   subsets: ['vietnamese'],
