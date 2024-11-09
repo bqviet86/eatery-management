@@ -37,6 +37,9 @@ export async function POST(req: Request) {
       return Response.json(payload, { status })
     }
 
-    return Response.json({ message: 'Internal server error' }, { status: 500 })
+    return Response.json(
+      { message: 'Lỗi khi gọi API đến server backend' },
+      { status: 500 }
+    )
   }
 }
