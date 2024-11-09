@@ -2,15 +2,22 @@ import { redirect } from 'next/navigation'
 import urlJoin from 'url-join'
 
 import { envConfig } from '~/config'
-import { normalizePath } from '~/lib/utils'
+import {
+  getAccessTokenFromLS,
+  normalizePath,
+  removeAccessTokenFromLS,
+  removeRefreshTokenFromLS,
+  setAccessTokenToLS,
+  setRefreshTokenToLS
+} from '~/lib/utils'
 import { LoginResType } from '~/schemaValidations/auth.schema'
 
-type HttpRes<Payload = any> = {
+export type HttpRes<Payload = any> = {
   status: number
   payload: Payload
 }
 
-class HttpError extends Error {
+export class HttpError extends Error {
   status: number
   payload: {
     message: string
@@ -35,7 +42,7 @@ type EntityErrorPayload = {
   }[]
 }
 
-class EntityError extends HttpError {
+export class EntityError extends HttpError {
   status: typeof ENTITY_ERROR_STATUS = ENTITY_ERROR_STATUS
   payload: EntityErrorPayload
 
@@ -45,7 +52,7 @@ class EntityError extends HttpError {
   }
 }
 
-const isClient = typeof window !== 'undefined'
+const isBrowser = typeof window !== 'undefined'
 let clientLogoutRequest: Promise<Response> | null = null
 
 type CustomOptions = Omit<RequestInit, 'method'> & {
@@ -67,8 +74,8 @@ const request = async <Res>(
     ? {}
     : { 'Content-Type': 'application/json' }
 
-  if (isClient) {
-    const accessToken = localStorage.getItem('accessToken')
+  if (isBrowser) {
+    const accessToken = getAccessTokenFromLS()
 
     if (accessToken) {
       baseHeaders.Authorization = `Bearer ${accessToken}`
@@ -105,7 +112,7 @@ const request = async <Res>(
       case ENTITY_ERROR_STATUS:
         throw new EntityError(data.payload as EntityErrorPayload)
       case AUTHENTICATION_ERROR_STATUS: {
-        if (isClient) {
+        if (isBrowser) {
           if (clientLogoutRequest === null) {
             clientLogoutRequest = fetch('/api/auth/logout', {
               method: 'POST',
@@ -116,8 +123,8 @@ const request = async <Res>(
             try {
               await clientLogoutRequest
             } finally {
-              localStorage.removeItem('accessToken')
-              localStorage.removeItem('refreshToken')
+              removeAccessTokenFromLS()
+              removeRefreshTokenFromLS()
               clientLogoutRequest = null
               location.href = '/login'
             }
@@ -136,19 +143,19 @@ const request = async <Res>(
     }
   }
 
-  if (isClient && response.ok) {
+  if (isBrowser && response.ok) {
     const normalizePathUrl = normalizePath(url)
 
     if (['api/auth/login'].includes(normalizePathUrl)) {
       const { accessToken, refreshToken } = (payload as LoginResType).data
 
-      localStorage.setItem('accessToken', accessToken)
-      localStorage.setItem('refreshToken', refreshToken)
+      setAccessTokenToLS(accessToken)
+      setRefreshTokenToLS(refreshToken)
     }
 
     if (['api/auth/logout'].includes(normalizePathUrl)) {
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
+      removeAccessTokenFromLS()
+      removeRefreshTokenFromLS()
     }
   }
 
@@ -169,9 +176,5 @@ const http = {
   delete: <Res>(url: string, options?: HttpOptions) =>
     request<Res>('DELETE', url, options)
 }
-
-export type { HttpRes }
-
-export { HttpError, EntityError, isClient }
 
 export default http
