@@ -4,6 +4,7 @@ import {
   LoginResType,
   LogoutBodyType
 } from '~/schemaValidations/auth.schema'
+import { MessageResType } from '~/schemaValidations/common.schema'
 
 const authRequest = {
   login: (body: LoginBodyType) =>
@@ -11,12 +12,13 @@ const authRequest = {
       baseUrl: ''
     }),
   sLogin: (body: LoginBodyType) => http.post<LoginResType>('/auth/login', body),
-  logout: () => http.post('/api/auth/logout', null, { baseUrl: '' }),
+  logout: () =>
+    http.post<MessageResType>('/api/auth/logout', null, { baseUrl: '' }),
   sLogout: ({
     accessToken,
     refreshToken
   }: LogoutBodyType & { accessToken: string }) =>
-    http.post(
+    http.post<MessageResType>(
       '/auth/logout',
       { refreshToken },
       {

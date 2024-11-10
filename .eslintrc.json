@@ -12,7 +12,6 @@
     "@typescript-eslint/no-empty-object-type": "off",
 
     "@tanstack/query/exhaustive-deps": "error",
-    "@tanstack/query/no-rest-destructuring": "warn",
 
     "prettier/prettier": [
       "warn",

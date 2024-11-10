@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -20,6 +21,7 @@ import { useLoginMutation } from '~/queries/useAuth'
 import { LoginBody, LoginBodyType } from '~/schemaValidations/auth.schema'
 
 export default function LoginForm() {
+  const router = useRouter()
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
@@ -27,13 +29,17 @@ export default function LoginForm() {
       password: ''
     }
   })
+
   const loginMutation = useLoginMutation()
 
   const onSubmit = form.handleSubmit((body) => {
     if (loginMutation.isPending) return
 
     loginMutation.mutate(body, {
-      onSuccess: ({ payload: { message } }) => toast({ description: message }),
+      onSuccess: ({ payload: { message } }) => {
+        router.push('/manage/dashboard')
+        toast({ description: message })
+      },
       onError: (error) => handleErrorApi({ error, setError: form.setError })
     })
   })
